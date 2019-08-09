@@ -1,27 +1,25 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, ReactElement } from 'react';
 import connect from './my-reactor';
+import { Dispatch } from './core/types';
 
-type Props = { dispatch: typeof connect.dispatch; tick: number, value:number };
+interface Props { dispatch: Dispatch; numNum: number; value: number }
 
-function Ticker({ dispatch, tick, value }: Props) {
-  const handleClick = useCallback(() => {
-    tick++;
-    dispatch({ tick, doubleTick: tick });
-  }, [dispatch, tick]);
-
-  return (
-    <div>
-      <h1>
-        {tick}
-        <button type="button" onClick={handleClick}>
+function Ticker({ dispatch, numNum, value }: Props): ReactElement
+{
+    const handleClick = useCallback(() => dispatch({type: 'INC', value: numNum + 1}), [dispatch, numNum]);
+    return (
+        <div>
+            <h1>
+                {numNum}
+                <button type="button" onClick={handleClick}>
           Tick
-        </button>
-      </h1>
-	  <small>My Value is {value}</small>
-    </div>
-  );
+                </button>
+            </h1>
+            <small>My Value is {value}</small>
+        </div>
+    );
 }
 
-const comp = connect<Props>(Ticker);
+const comp = connect(Ticker);
 
 export default comp;

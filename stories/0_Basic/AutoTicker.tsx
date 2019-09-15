@@ -14,7 +14,7 @@ function AutoTicker() {
     a$.pipe(
       tap(v => action(`Start`)()),
       map(a => a._current),
-      switchMap(v => interval(1000).pipe(map(_ => ++v)))
+      switchMap(v => interval(1000).pipe(map(_ => (v === 10 ? 1 : ++v))))
     )
   );
 

@@ -27,18 +27,17 @@ function createCore<T extends UnkownReactors>(
     (key): Map => [key, reactors[key]]
   );
 
+  const keys: Array<keyof State> = Object.keys(reactors);
   return { withReactor, getValue, useDispatch };
 
   function useDispatch(action: Action, deps: Readonly<any[]>) {
     useEffect(() => dispatch(action), deps);
   }
 
-  const defaultKeys: Array<keyof State> = Object.keys(reactors);
   function withReactor<P>(
     component: RC<P>
     //...keys: Array<keyof State>
   ): RC<Without<P, T>> {
-    const keys = defaultKeys;
     const ConnectedComp: RC<Without<P, T>> = (props: Without<P, T>) => {
       const init = useMemo(getValue, []);
       const [state, setState] = useState(init);

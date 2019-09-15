@@ -1,0 +1,37 @@
+{
+  "name": "reactor-core",
+  "version": "1.0.0",
+  "description": "A reactive reducer for React",
+  "main": "index.js",
+  "module": "main.js",
+  "scripts": {
+    "test": "test",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
+  },
+  "keywords": [
+    "react",
+    "rx",
+    "reactive",
+    "reducer"
+  ],
+  "author": "Jonathan Peel",
+  "license": "ISC",
+  "dependencies": {
+    "esm": "^3.2.25",
+    "react": "^16.8.6",
+    "rxjs": "^6.5.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.6.0",
+    "@storybook/addon-actions": "^5.2.0",
+    "@storybook/addon-links": "^5.2.0",
+    "@storybook/addons": "^5.2.0",
+    "@storybook/react": "^5.2.0",
+    "@types/storybook__react": "^4.0.2",
+    "awesome-typescript-loader": "^5.2.1",
+    "babel-loader": "^8.0.6",
+    "react-docgen-typescript-loader": "^3.2.0",
+    "typescript": "^3.5.3"
+  }
+}

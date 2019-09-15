@@ -14,22 +14,21 @@ function AutoTicker() {
     a$.pipe(
       tap(v => action(`Start`)()),
       map(a => a._current),
-      switchMap(v => interval(1000).pipe(map(_ => v++)))
-      //tap(v => action(`Tick: ${v}`)())
+      switchMap(v => interval(1000).pipe(map(_ => ++v)))
     )
   );
 
-  const connect = createCore({ autoTick });
+  const { withReactor, useDispatch } = createCore({ autoTick });
 
   type Props = {
     autoTick: number;
   };
   function StaticTick({ autoTick }: Props) {
-    connect.useDispatch({ type: 'Start' }, []);
+    useDispatch({ type: 'Start' }, []);
     return <div>value: {autoTick}</div>;
   }
 
-  const Tick = connect(StaticTick);
+  const Tick = withReactor(StaticTick);
 
   return <Tick />;
 }

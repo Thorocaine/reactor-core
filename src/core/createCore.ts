@@ -10,9 +10,10 @@ type Without<P, T> = Omit<P, 'dispatch' | keyof T>;
 
 type Connect<T> = <P>(component: RC<P>) => RC<Without<P, T>>;
 
-type Core<T extends {}> = Connect<T> & {
+type Core<T extends {}> = {
+  withReactor: Connect<T>;
   getValue: () => T;
-  useDispatch: (action: Action, deps?: Readonly<any[]>) => void;
+  useDispatch: (action: Action, deps: Readonly<any[]>) => void;
 };
 
 function createCore<T extends UnkownReactors>(
@@ -25,26 +26,30 @@ function createCore<T extends UnkownReactors>(
   const reactorArray = Object.keys(reactors).map(
     (key): Map => [key, reactors[key]]
   );
-  const connector = withReactor as Core<CoreResults<T>>;
 
-  connector.getValue = () => getValue();
+  return { withReactor, getValue, useDispatch };
 
-  connector['useDispatch'] = (action, deps = [action]) =>
-    // eslint-disable-next-line
+  function useDispatch(action: Action, deps: Readonly<any[]>) {
     useEffect(() => dispatch(action), deps);
+  }
 
-  return connector;
-
-  function withReactor<P>(component: RC<P>): RC<Without<P, T>> {
+  const defaultKeys: Array<keyof State> = Object.keys(reactors);
+  function withReactor<P>(
+    component: RC<P>
+    //...keys: Array<keyof State>
+  ): RC<Without<P, T>> {
+    const keys = defaultKeys;
     const ConnectedComp: RC<Without<P, T>> = (props: Without<P, T>) => {
       const init = useMemo(getValue, []);
       const [state, setState] = useState(init);
       const stateProps = { ...state, dispatch, ...props };
-      useEffect(effect(state, setState), [state, setState]);
+      const deps = keys.map(k => state[k]);
+      useEffect(effect(state, setState), [...keys, ...deps, setState]);
+
       const element = component(stateProps as P);
       return element;
     };
-    ConnectedComp.displayName = `${component.name}_Connected`;
+    ConnectedComp.displayName = `${component.name}_WithReactor`;
     return ConnectedComp;
   }
 
@@ -54,8 +59,10 @@ function createCore<T extends UnkownReactors>(
 
   function effect(state: State, setState: SetState): () => () => void {
     return () => {
-      const subscriptions = reactorArray.map(subscribe(state, setState));
-      return () => subscriptions.forEach(sub => sub.unsubscribe());
+      // const subscriptions =
+      reactorArray.map(subscribe(state, setState));
+      return () => console.log('Should unsubscribe here.');
+      // return () => subscriptions.forEach(sub => sub.unsubscribe());
     };
   }
 
@@ -71,13 +78,8 @@ function createCore<T extends UnkownReactors>(
     state: State,
     setState: SetState
   ): (_: Map) => Subscription {
-    return ([key, rxr]) => {
-      debugger;
-      return rxr.subscribe(result => {
-        debugger;
-        setState({ ...state, [key]: result });
-      });
-    };
+    return ([key, rxr]) =>
+      rxr.subscribe(result => setState({ ...state, [key]: result }));
   }
 }
 

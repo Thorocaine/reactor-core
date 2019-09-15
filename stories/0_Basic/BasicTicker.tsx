@@ -17,7 +17,7 @@ function BasicTicker() {
     )
   );
 
-  const connect = createCore({ tick });
+  const { withReactor } = createCore({ tick });
 
   type Props = {
     dispatch: Dispatch;
@@ -38,7 +38,7 @@ function BasicTicker() {
     );
   }
 
-  const Tick = connect(StaticTick);
+  const Tick = withReactor(StaticTick);
 
   return <Tick />;
 }
